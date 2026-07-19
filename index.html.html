@@ -303,6 +303,8 @@ let flags = {};
 let stats={mental:50,finance:50,social:50,energy:50};
 let day=1;
 
+const SWIPE_LIMIT = window.innerWidth <= 768 ? 90 : 140;
+
 const names={mental:"🧠 Tinh thần",finance:"💰 Tài chính",social:"👥 Xã hội",energy:"⚡ Năng lượng"};
 const avatars=[
 
@@ -615,39 +617,61 @@ start=(e.touches?e.touches[0].clientX:e.clientX);
 function move(e){
 if(!drag)return;
 dx=(e.touches?e.touches[0].clientX:e.clientX)-start;
-let p=Math.min(Math.abs(dx)/180,1);
+let previewLimit = window.innerWidth <= 768 ? 100 : 180;
+
+let p = Math.min(Math.abs(dx)/previewLimit,1);
 card.style.transform=`translateX(${dx}px) rotate(${dx/18}deg) scale(${1-p*0.05})`;
 leftBox.style.opacity=dx<0?p:0;
 rightBox.style.opacity=dx>0?p:0;
 }
 function up(){
-if(!drag)return;
-drag=false;
 
-if(dx>140){
-card.style.transition=".2s";
-card.style.transform="translateX(120vw) rotate(25deg) scale(.9)";
-setTimeout(()=>{
-card.style.transition="";
-card.style.transform="";
-apply(current[5]);
-},200);
-}
-else if(dx<-140){
-card.style.transition=".2s";
-card.style.transform="translateX(-120vw) rotate(-25deg) scale(.9)";
-setTimeout(()=>{
-card.style.transition="";
-card.style.transform="";
-apply(current[3]);
-},200);
-}
-else{
-card.style.transform="";
-}
-leftBox.style.opacity=0;
-rightBox.style.opacity=0;
-dx=0;
+    if(!drag) return;
+
+    drag = false;
+
+    if(dx > SWIPE_LIMIT){
+
+        card.style.transition=".2s";
+        card.style.transform="translateX(120vw) rotate(25deg) scale(.9)";
+
+        setTimeout(()=>{
+
+            card.style.transition="";
+            card.style.transform="";
+
+            apply(current[5]);
+
+        },200);
+
+    }
+
+    else if(dx < -SWIPE_LIMIT){
+
+        card.style.transition=".2s";
+        card.style.transform="translateX(-120vw) rotate(-25deg) scale(.9)";
+
+        setTimeout(()=>{
+
+            card.style.transition="";
+            card.style.transform="";
+
+            apply(current[3]);
+
+        },200);
+
+    }
+
+    else{
+
+        card.style.transform="";
+
+    }
+
+    leftBox.style.opacity=0;
+    rightBox.style.opacity=0;
+    dx=0;
+
 }
 
 card.addEventListener("mousedown",down);
