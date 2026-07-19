@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Your Unhealthy Life Deluxe</title>
+<title>Your Unhealthy Life</title>
 <style>
 *{
     box-sizing:border-box;
@@ -60,6 +60,22 @@ z-index:-1;
 pointer-events:none;
 
 }
+.top-panel{
+    width:700px;
+    margin:20px auto 30px;
+
+    background:rgba(255,255,255,.12);
+    backdrop-filter:blur(14px);
+
+    border:1px solid rgba(255,255,255,.15);
+
+    border-radius:20px;
+
+    padding:20px 30px;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.3);
+}
+
 .game{width:min(430px,95vw)}
 .top{text-align:center;margin-bottom:10px}
 .day{opacity:.8;margin-top:6px}
@@ -83,8 +99,39 @@ display:flex;flex-direction:column;justify-content:center;align-items:center;
 text-align:center;user-select:none;cursor:grab;
 transition:transform .15s;z-index:10;
 }
-.avatar{font-size:64px;margin-bottom:10px}
+.card{
+
+transition:.25s;
+
+}
+
+.card:hover{
+
+transform:translateY(-5px);
+
+box-shadow:0 25px 60px rgba(0,0,0,.4);
+
+}
+.avatar{
+
+width:140px;
+
+height:140px;
+
+object-fit:contain;
+
+margin-bottom:15px;
+
+pointer-events:none;
+
+user-select:none;
+
+}
 .card h2{margin-bottom:10px}
+.card hr{
+    opacity:.2;
+    margin:25px 0;
+}
 .choice{
 position:absolute;top:50%;transform:translateY(-50%);
 width:140px;font-weight:bold;opacity:0;transition:.15s;z-index:999;pointer-events: none;
@@ -97,6 +144,41 @@ position:fixed;inset:0;background:rgba(0,0,0,.92);
 display:none;justify-content:center;align-items:center;
 flex-direction:column;text-align:center;padding:20px
 }
+.flags{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:10px;
+
+    margin-top:12px;
+
+    min-height:40px;
+
+}
+
+.flag{
+
+    width:38px;
+
+    height:38px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:24px;
+
+    background:rgba(255,255,255,.15);
+
+    border-radius:12px;
+
+    backdrop-filter:blur(8px);
+
+}
 button{padding:12px 20px;border:none;border-radius:12px;cursor:pointer}
 </style>
 </head>
@@ -108,6 +190,7 @@ button{padding:12px 20px;border:none;border-radius:12px;cursor:pointer}
 <div class="top">
 <h1>Your Unhealthy Life</h1>
 <div class="day">Day <span id="day">1</span></div>
+<div id="flagsBar" class="flags"></div>
 </div>
 
 <div class="stats" id="stats"></div>
@@ -121,7 +204,7 @@ button{padding:12px 20px;border:none;border-radius:12px;cursor:pointer}
 <div class="choice left" id="leftBox"></div>
 <div class="choice right" id="rightBox"></div>
 
-<div class="avatar" id="avatar">😐</div>
+<img id="avatar" class="avatar" src="images/adu.png">
 <h2 id="title"></h2>
 <p id="text"></p>
 </div>
@@ -135,39 +218,81 @@ button{padding:12px 20px;border:none;border-radius:12px;cursor:pointer}
 </div>
 
 <script>
+let flags = {};
 let stats={mental:50,finance:50,social:50,energy:50};
 let day=1;
 
 const names={mental:"🧠 Tinh thần",finance:"💰 Tài chính",social:"👥 Xã hội",energy:"⚡ Năng lượng"};
+const avatars=[
+
+"images/adu.png",
+
+"images/buonia.png",
+
+"images/dafuq.png",
+
+"images/ded.png",
+
+"images/fatmf.png",
+
+"images/nerd.png",
+
+"images/smug.png",
+
+"images/trungbacthao.png"
+
+];
+
+const flagIcons={
+
+    love:"❤️",
+
+    parttime:"💼",
+
+    hardworking:"📚",
+
+    sick:"🤒",
+
+    burnout:"🔥",
+
+    rich:"💰",
+
+    gym:"💪"
+
+};
 
 const cards=[
-["Báo thức","Chuông báo thức reo lúc 6h sáng. Bạn có tiết học lúc 7h.","Ngủ tiếp",{mental:10,energy:5,finance:-8},"Thức dậy đi học",{finance:5,energy:-7,mental:-12}],
-["Cà phê","Bạn bè rủ bạn đi uống cà phê.","Đồng ý",{social:8,finance:-5},"Ở nhà nghỉ ngơi",{energy:5,social:-8}],
-["Deadline gấp","Bài tập đã đến hạn, bạn cần phải làm việc thâu đêm.","Mặc kệ và nghỉ ngơi",{mental:5,energy:8,finance:-5},"Làm tiếp",{finance:7,energy:-15,mental:-8}],
-["Làm thêm","Bạn có cơ hội nhận một công việc parttime.","Nhận việc",{finance:7,energy:-8,},"Từ chối",{}],
-["Lướt Tiktok","Nửa đêm, nằm lướt Tiktok. Bạn nhìn đồng hồ mới 12 giờ.","Lướt thêm tí nữa",{mental:5,energy:-10},"Đi ngủ",{energy:8}],
-["Flash Sale","Một món đồ bạn đã thích từ lâu đang được giảm giá.","Chốt đơn",{mental:8,finance:-10},"Thôi bỏ qua",{mental:-5}],
-["Ăn đêm","Nửa đêm, bạn đang hơi đói.","Dậy ăn đêm",{mental:8,energy:5,finance:-10},"Nhịn đói",{energy:-5,mental:-8}],
-["Thể dục thể thao","Bạn của bạn rủ đi đá bóng, bạn sẽ.","Đồng ý",{mental:5,social:8,energy:-8,finance:-5},"Từ chối",{social:-5}],
-["Đi du lịch","Bạn bè rủ đi chơi cuối tuần.","Đi",{mental:8,social:8,finance:-15,energy:-8},"Ở nhà",{energy:8,mental:-5,social:-5}],
-["Khóa học online","Một khóa học đang miễn phí.","Học",{mental:6,finance:3,energy:-4},"Bỏ qua",{}],
-["Dọn phòng","Phòng trọ rất bừa bộn.","Dọn ngay",{mental:8,energy:-10},"Để mai",{mental:-6}],
-["Bạn thất tình","Bạn thân muốn tâm sự với bạn.","Lắng nghe",{social:10,energy:-4},"Từ chối",{social:-8}],
-["Đi bộ","Quãng đường về nhà khoảng 2km.","Đi bộ",{mental:5,energy:-8},"Đi xe ôm",{finance:-8,energy:5}],
-["Khám sức khỏe","Trường tổ chức khám sức khỏe miễn phí.","Đi khám",{mental:3,energy:2},"Bỏ qua",{}],
-["Lương về","Bạn vừa nhận lương tháng.","Tiết kiệm",{finance:12},"Mua đồ",{mental:8,finance:-10}],
-["Mất điện","Phòng trọ bị cúp điện tối nay.","Ra quán cà phê",{mental:5,finance:-6,energy:-5},"Đi ngủ sớm",{energy:10}],
-["Chơi game","Bạn bè rủ chơi game đến khuya.","Chơi",{mental:8,social:5,energy:-10},"Từ chối",{energy:6,social:-5}],
-["Đọc sách","Bạn mua một cuốn sách phát triển bản thân.","Đọc ngay",{mental:5,energy:-5},"Để sau",{mental:-5}],
-["Nhận học bổng","Bạn đạt học bổng học kỳ.","Ăn mừng",{mental:10,finance:-5},"Tiết kiệm",{finance:5}],
-["Bạn bè nhờ giúp","Bạn bè nhờ bạn hỗ trợ việc gấp.","Giúp",{social:8,energy:-5},"Từ chối",{energy:5,social:-6}],
-["Trời mưa","Sáng nay trời mưa lớn.","Đi xe bus",{finance:-6,energy:5},"Đi xe máy",{energy:-8}],
-["Mất ví","Bạn phát hiện ví không còn trong balo.","Làm lại giấy tờ",{finance:-15,mental:-8},"Bình tĩnh tìm",{mental:-6}],
-["Khuyến mãi đồ ăn","App giao đồ ăn giảm 50%.","Đặt món",{mental:6,finance:-5},"Tự nấu",{finance:6,energy:-8}],
-["Thức khuya","Đã 2 giờ sáng nhưng bạn chưa ngủ.","Ngủ ngay",{energy:10},"Làm tiếp",{finance:5,energy:-12,mental:-8}],
-["Xem phim","Phim mới đang công chiếu.","Đi xem",{mental:8,energy:-5,finance:-10},"Tiếp tục học",{finance:5,mental:-8}],
-["Học nhóm","Bạn được rủ học nhóm cuối tuần.","Tham gia",{social:8,mental:5,energy:-8},"Từ chối",{energy:5,social:-8}],
-["Burnout","Bạn cảm thấy kiệt quệ và không muốn làm điều gì cả.","Nghỉ ngơi một ngày",{mental:15,finance:-8},"Cố chịu đựng",{finance:5,mental:-10,energy:-10},{mentalMax:20}],
+["Báo thức","Chuông báo thức reo lúc 6h sáng. Bạn có tiết học lúc 7h.","Ngủ tiếp",{mental:10,energy:5,finance:-8},"Thức dậy đi học",{finance:5,energy:-7,mental:-12,flag:"hardworking"},"ded.png"],
+["Cà phê","Bạn bè rủ bạn đi uống cà phê.","Đồng ý",{social:8,finance:-5},"Ở nhà nghỉ ngơi",{energy:5,social:-8},"adu.png"],
+["Deadline gấp","Bài tập đã đến hạn, bạn cần phải làm việc thâu đêm.","Mặc kệ và nghỉ ngơi",{mental:5,energy:8,finance:-5},"Làm tiếp",{finance:7,energy:-15,mental:-8},"buonia.png"],
+["Làm thêm","Bạn có cơ hội nhận một công việc parttime.","Nhận việc",{finance:7,energy:-8,flag:"parttime"},"Từ chối",{},"smug.png"],
+["Lướt Tiktok","Nửa đêm, nằm lướt Tiktok. Bạn nhìn đồng hồ mới 12 giờ.","Lướt thêm tí nữa",{mental:5,energy:-10},"Đi ngủ",{energy:8},"smug.png"],
+["Flash Sale","Một món đồ bạn đã thích từ lâu đang được giảm giá.","Chốt đơn",{mental:8,finance:-10},"Thôi bỏ qua",{mental:-5},"smug.png"],
+["Ăn đêm","Nửa đêm, bạn đang hơi đói.","Dậy ăn đêm",{mental:8,energy:5,finance:-10},"Nhịn đói",{energy:-5,mental:-8},"fatmf.png"],
+["Thể dục thể thao","Bạn của bạn rủ đi đá bóng, bạn sẽ.","Đồng ý",{mental:5,social:8,energy:-8,finance:-5},"Từ chối",{social:-5},"adu.png"],
+["Đi du lịch","Bạn bè rủ đi chơi cuối tuần.","Đi",{mental:8,social:8,finance:-15,energy:-8},"Ở nhà",{energy:8,mental:-5,social:-5},"adu.png"],
+["Khóa học online","Một khóa học đang miễn phí.","Học",{mental:6,finance:3,energy:-4},"Bỏ qua",{},"nerd.png"],
+["Dọn phòng","Phòng trọ rất bừa bộn.","Dọn ngay",{mental:8,energy:-10},"Để mai",{mental:-6},"buonia.png"],
+["Bạn thất tình","Bạn thân muốn tâm sự với bạn.","Lắng nghe",{social:10,energy:-4},"Từ chối",{social:-8},"adu.png"],
+["Đi bộ","Quãng đường về nhà khoảng 2km.","Đi bộ",{mental:5,energy:-8},"Đi xe ôm",{finance:-8,energy:5},"trungbacthao.png"],
+["Khám sức khỏe","Trường tổ chức khám sức khỏe miễn phí.","Đi khám",{mental:3,energy:2},"Bỏ qua",{},"trungbacthao.png"],
+["Lương về","Bạn vừa nhận lương tháng.","Tiết kiệm",{finance:12},"Mua đồ",{mental:8,finance:-10},"smug.png",{requireFlag:"parttime"}],
+["Mất điện","Phòng trọ bị cúp điện tối nay.","Ra quán cà phê",{mental:5,finance:-6,energy:-5},"Đi ngủ sớm",{energy:10},"dafuq.png"],
+["Chơi game","Bạn bè rủ chơi game đến khuya.","Chơi",{mental:8,social:5,energy:-10},"Từ chối",{energy:6,social:-5},"adu.png"],
+["Đọc sách","Bạn mua một cuốn sách phát triển bản thân.","Đọc ngay",{mental:5,energy:-5},"Để sau",{mental:-5},"nerd.png"],
+["Nhận học bổng","Bạn đạt học bổng học kỳ.","Ăn mừng",{mental:10,finance:3,removeFlag:"hardworking"},"Tiết kiệm",{finance:5,removeFlag:"hardworking"},"smug.png",{requireFlag:"hardworking"}],
+["Bạn bè nhờ giúp","Bạn bè nhờ bạn hỗ trợ việc gấp.","Giúp",{social:8,energy:-5},"Từ chối",{energy:5,social:-6},"adu.png"],
+["Trời mưa","Sáng nay trời mưa lớn.","Đi xe bus",{finance:-6,energy:5},"Đi xe máy",{energy:-8,flag:"sick"},"buonia.png"],
+["Mất ví","Bạn phát hiện ví không còn trong balo.","Làm lại giấy tờ",{finance:-15,mental:-8},"Bình tĩnh tìm",{mental:-6},"ded.png"],
+["Khuyến mãi đồ ăn","App giao đồ ăn giảm 50%.","Đặt món",{mental:6,finance:-5},"Tự nấu",{finance:6,energy:-8},"fatmf.png"],
+["Thức khuya","Đã 2 giờ sáng nhưng bạn chưa ngủ.","Ngủ ngay",{energy:10},"Làm tiếp",{finance:5,energy:-12,mental:-8},"dafuq.png"],
+["Xem phim","Phim mới đang công chiếu.","Đi xem",{mental:8,energy:-5,finance:-10},"Tiếp tục học",{finance:5,mental:-8},"buonia.png"],
+["Học nhóm","Bạn được rủ học nhóm cuối tuần.","Tham gia",{social:8,mental:5,energy:-8},"Từ chối",{energy:5,social:-8},"adu.png"],
+["Burnout","Bạn cảm thấy kiệt quệ và không muốn làm điều gì cả.","Nghỉ ngơi một ngày",{mental:15,finance:-8},"Cố chịu đựng",{finance:5,mental:-10,energy:-10},"ded.png",{mentalMax:20}],
+["Thất bại","Dự án nhóm bị điểm thấp.","Tự trách",{mental:-12},"Rút kinh nghiệm",{mental:6},"ded.png"],
+["Mất động lực","Bạn không muốn làm bất cứ việc gì.","Nghỉ ngơi",{mental:8},"Ép bản thân",{finance:5,mental:-8,energy:-10},"buonia.png",{mentalMax:35}],
+["Khủng hoảng hiện sinh","Bạn tự hỏi liệu những gì mình đang làm có ý nghĩa không.","Suy ngẫm",{mental:8,energy:-10},"Mặc kệ",{finance:5,mental:-8},"trungbacthao.png",{mentalMax:30}],
+["Bạn được tỏ tình","Có người bày tỏ tình cảm với bạn.","Đồng ý",{social:7,mental:8,flag:"love"},"Từ chối",{mental:-8},"smug.png"],
 ];
 
 // Bộ bài hiện tại
@@ -189,35 +314,7 @@ function shuffle(array){
 function createDeck(){
 
     // Copy toàn bộ cards sang deck
-    deck = [
-["Báo thức","Chuông báo thức reo lúc 6h sáng. Bạn có tiết học lúc 7h.","Ngủ tiếp",{mental:10,energy:5,finance:-8},"Thức dậy đi học",{finance:5,energy:-7,mental:-12}],
-["Cà phê","Bạn bè rủ bạn đi uống cà phê.","Đồng ý",{social:8,finance:-5},"Ở nhà nghỉ ngơi",{energy:5,social:-8}],
-["Deadline gấp","Bài tập đã đến hạn, bạn cần phải làm việc thâu đêm.","Mặc kệ và nghỉ ngơi",{mental:5,energy:8,finance:-5},"Làm tiếp",{finance:7,energy:-15,mental:-8}],
-["Làm thêm","Bạn có cơ hội nhận một công việc parttime.","Nhận việc",{finance:7,energy:-8,},"Từ chối",{}],
-["Lướt Tiktok","Nửa đêm, nằm lướt Tiktok. Bạn nhìn đồng hồ mới 12 giờ.","Lướt thêm tí nữa",{mental:5,energy:-10},"Đi ngủ",{energy:8}],
-["Flash Sale","Một món đồ bạn đã thích từ lâu đang được giảm giá.","Chốt đơn",{mental:8,finance:-10},"Thôi bỏ qua",{mental:-5}],
-["Ăn đêm","Nửa đêm, bạn đang hơi đói.","Dậy ăn đêm",{mental:8,energy:5,finance:-10},"Nhịn đói",{energy:-5,mental:-8}],
-["Thể dục thể thao","Bạn của bạn rủ đi đá bóng, bạn sẽ.","Đồng ý",{mental:5,social:8,energy:-8,finance:-5},"Từ chối",{social:-5}],
-["Đi du lịch","Bạn bè rủ đi chơi cuối tuần.","Đi",{mental:8,social:8,finance:-15,energy:-8},"Ở nhà",{energy:8,mental:-5,social:-5}],
-["Khóa học online","Một khóa học đang miễn phí.","Học",{mental:6,finance:3,energy:-4},"Bỏ qua",{}],
-["Dọn phòng","Phòng trọ rất bừa bộn.","Dọn ngay",{mental:8,energy:-10},"Để mai",{mental:-6}],
-["Bạn thất tình","Bạn thân muốn tâm sự với bạn.","Lắng nghe",{social:10,energy:-4},"Từ chối",{social:-8}],
-["Đi bộ","Quãng đường về nhà khoảng 2km.","Đi bộ",{mental:5,energy:-8},"Đi xe ôm",{finance:-8,energy:5}],
-["Khám sức khỏe","Trường tổ chức khám sức khỏe miễn phí.","Đi khám",{mental:3,energy:2},"Bỏ qua",{}],
-["Lương về","Bạn vừa nhận lương tháng.","Tiết kiệm",{finance:12},"Mua đồ",{mental:8,finance:-10}],
-["Mất điện","Phòng trọ bị cúp điện tối nay.","Ra quán cà phê",{mental:5,finance:-6,energy:-5},"Đi ngủ sớm",{energy:10}],
-["Chơi game","Bạn bè rủ chơi game đến khuya.","Chơi",{mental:8,social:5,energy:-10},"Từ chối",{energy:6,social:-5}],
-["Đọc sách","Bạn mua một cuốn sách phát triển bản thân.","Đọc ngay",{mental:5,energy:-5},"Để sau",{mental:-5}],
-["Nhận học bổng","Bạn đạt học bổng học kỳ.","Ăn mừng",{mental:10,finance:-5},"Tiết kiệm",{finance:5}],
-["Bạn bè nhờ giúp","Bạn bè nhờ bạn hỗ trợ việc gấp.","Giúp",{social:8,energy:-5},"Từ chối",{energy:5,social:-6}],
-["Trời mưa","Sáng nay trời mưa lớn.","Đi xe bus",{finance:-6,energy:5},"Đi xe máy",{energy:-8}],
-["Mất ví","Bạn phát hiện ví không còn trong balo.","Làm lại giấy tờ",{finance:-15,mental:-8},"Bình tĩnh tìm",{mental:-6}],
-["Khuyến mãi đồ ăn","App giao đồ ăn giảm 50%.","Đặt món",{mental:6,finance:-5},"Tự nấu",{finance:6,energy:-8}],
-["Thức khuya","Đã 2 giờ sáng nhưng bạn chưa ngủ.","Ngủ ngay",{energy:10},"Làm tiếp",{finance:5,energy:-12,mental:-8}],
-["Xem phim","Phim mới đang công chiếu.","Đi xem",{mental:8,energy:-5,finance:-10},"Tiếp tục học",{finance:5,mental:-8}],
-["Học nhóm","Bạn được rủ học nhóm cuối tuần.","Tham gia",{social:8,mental:5,energy:-8},"Từ chối",{energy:5,social:-8}],
-["Burnout","Bạn cảm thấy kiệt quệ và không muốn làm điều gì cả.","Nghỉ ngơi một ngày",{mental:15,finance:-8},"Cố chịu đựng",{finance:5,mental:-10,energy:-10},{mentalMax:20}],
-];
+deck=[...cards];
 
     // Trộn deck
     shuffle(deck);
@@ -226,6 +323,7 @@ function createDeck(){
 }
 
 const card=document.getElementById("card");
+const avatar=document.getElementById("avatar");
 const leftBox=document.getElementById("leftBox");
 const rightBox=document.getElementById("rightBox");
 
@@ -239,31 +337,37 @@ wrap.innerHTML+=`
 <div class="bar"><div class="fill" style="width:${stats[k]}%;background:${k=="mental"?"#ff74c8":k=="finance"?"#67dd67":k=="social"?"#67c4ff":"#ffc86b"}"></div></div>
 </div>`;
 }
-updateAvatar();
+
 }
-function updateAvatar(){
-let m=stats.mental;
-avatar.textContent=m>85?"😎":m>65?"🙂":m>45?"😐":m>25?"😟":"😫";
+function updateAvatar(image){
+
+ avatar.src="images/"+image;
 }
 function arrows(effect){
-return Object.keys(effect).map(k=>{
-if(effect[k]>0) return names[k].split(" ")[0];
-if(effect[k]<0) return names[k].split(" ")[0];
-}).filter(Boolean).join("<br>");
+
+    return Object.keys(effect)
+
+    .filter(k =>
+        k!="flag" &&
+        k!="removeFlag"
+    )
+
+    .map(k=>{
+
+        if(effect[k]>0)
+            return names[k].split(" ")[0];
+
+        if(effect[k]<0)
+            return names[k].split(" ")[0];
+
+    })
+
+    .filter(Boolean)
+
+    .join("<br>");
 }
 let current;
-
 function nextCard(){
-
-    // Nếu deck hết thì tạo lại
-    if(deck.length === 0){
-
-        createDeck();
-
-    }
-
-    // Rút lá cuối cùng
-    current = deck.pop();
 
 do{
 
@@ -288,6 +392,8 @@ console.log(
 
     text.textContent = current[1];
 
+updateAvatar(current[6]);
+
     leftBox.innerHTML =
         "<b>" + current[2] + "</b>" +
         "<div class='preview'>" +
@@ -306,9 +412,20 @@ console.log(
 
 function checkCondition(card){
 
-    let condition = card[6];
+    let condition = card[7];
 
     if(!condition) return true;
+
+if(condition.requireFlag != null){
+
+        if(!flags[condition.requireFlag]){
+
+            return false;
+
+        }
+
+    }
+
 
     if(condition.mentalMin != null && stats.mental < condition.mentalMin)
         return false;
@@ -340,9 +457,22 @@ function checkCondition(card){
 
 function apply(effect){
 for(let k in effect){
-let before=stats[k];
+    if(!(k in stats)) continue;let before=stats[k];
 stats[k]=Math.max(0,Math.min(100,stats[k]+effect[k]));
 }
+if(effect.flag){
+
+    flags[effect.flag]=true;
+
+}
+
+if(effect.removeFlag){
+
+    delete flags[effect.removeFlag];
+
+}
+renderFlags();
+
 let gameOver = false;
 
 renderStats();
@@ -356,6 +486,32 @@ if(day>=20)return end("🏆","Bạn đã cân bằng được cuộc sống củ
 day++;
 document.getElementById("day").textContent=day;
 nextCard();
+}
+
+function renderFlags(){
+
+    const bar=document.getElementById("flagsBar");
+
+    bar.innerHTML="";
+
+    for(let key in flags){
+
+        if(flags[key]){
+
+            let div=document.createElement("div");
+
+            div.className="flag";
+
+            div.textContent=flagIcons[key] || "❔";
+
+            div.title=key;
+
+            bar.appendChild(div);
+
+        }
+
+    }
+
 }
 
 function end(t,m){
