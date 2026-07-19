@@ -7,7 +7,7 @@ Instead of obvious right-or-wrong answers, most choices involve trade-offs. Play
 The game encourages strategic thinking and highlights the long-term consequences of small daily decisions.
 ## 👨‍💻 Developer
 
-Created by **Dao Minh Hieu**
+Created by **Hoimet**
 
 FPT University
 
