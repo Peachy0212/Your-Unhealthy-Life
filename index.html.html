@@ -1271,12 +1271,12 @@ document.addEventListener("keydown",(e)=>{
     if(document.getElementById("startScreen")) return;
 
     if(e.repeat) return;
-
+    
     if(e.key==="ArrowLeft"){
 
         e.preventDefault();
 
-        card.style.transition=".2s";
+       card.style.transition=".6s ease-out";
         card.style.transform="translateX(-120vw) rotate(-25deg)";
 
         setTimeout(()=>{
@@ -1286,7 +1286,7 @@ document.addEventListener("keydown",(e)=>{
 
             apply(current[3]);
 
-        },200);
+        },600);
 
     }
 
@@ -1294,7 +1294,7 @@ document.addEventListener("keydown",(e)=>{
 
         e.preventDefault();
 
-        card.style.transition=".2s";
+        card.style.transition=".6s ease-out";
         card.style.transform="translateX(120vw) rotate(25deg)";
 
         setTimeout(()=>{
@@ -1304,7 +1304,7 @@ document.addEventListener("keydown",(e)=>{
 
             apply(current[5]);
 
-        },200);
+        },600);
 
     }
 
