@@ -229,6 +229,35 @@ width:140px;font-weight:bold;opacity:1;transition:.15s;z-index:999;pointer-event
     backdrop-filter:blur(8px);
 
 }
+.tutorialBox{
+
+    width:650px;
+
+    max-width:90vw;
+
+    background:rgba(20,20,20,.9);
+
+    color:#fff;
+
+    border-radius:25px;
+
+    padding:35px;
+
+    text-align:center;
+
+}<di
+
+}
+.tutorialButtons{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-top:25px;
+
+}
+
 button{padding:12px 20px;border:none;border-radius:12px;cursor:pointer}
 /* ================= MOBILE ================= */
 
@@ -375,6 +404,59 @@ button{padding:12px 20px;border:none;border-radius:12px;cursor:pointer}
     background:#1b5d80;
 
 }
+#tutorialBtn{
+
+    margin-top:15px;
+
+    padding:14px 45px;
+
+    font-size:20px;
+
+    border:none;
+
+    border-radius:999px;
+
+    background:#ffffff;
+
+    color:#14445E;
+
+}
+#tutorialScreen{
+
+    position:fixed;
+
+    inset:0;
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:rgba(0,0,0,.88);
+
+    z-index:99999;
+
+}
+#tutorialImage{
+
+    width:100%;
+
+    max-width:420px;
+
+    display:block;
+
+    margin:0 auto 20px;
+
+    border-radius:16px;
+
+    border:2px solid rgba(255,255,255,.15);
+
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+
+    object-fit:contain;
+
+}
 </style>
 </head>
 <audio id="bgm" loop>
@@ -387,30 +469,64 @@ button{padding:12px 20px;border:none;border-radius:12px;cursor:pointer}
 
     <p>
         Mỗi lựa chọn đều sẽ thay đổi cuộc đời bạn.
-        Hãy sống sót qua 100 ngày và khám phá tất cả các kết thúc.
+        Hãy sống sót qua 60 ngày và khám phá tất cả các kết thúc.
     </p>
 
-    <button id="startBtn">Bắt đầu</button>
-<p class="guide">
+   <button id="startBtn">
 
-🖱 Kéo sang trái hoặc phải để đưa ra quyết định.
+    Bắt đầu
 
-❤️ Mỗi quyết định sẽ ảnh hưởng đến:
+</button>
 
-🧠 Tinh thần
+<button id="tutorialBtn">
 
-💰 Tài chính
+    Hướng dẫn
 
-⚡ Năng lượng
-
-👥 Quan hệ
-
-🎓 Học lực
-
-Nếu một chỉ số về 0, trò chơi sẽ kết thúc.
-
-</p>
+</button>
 </div>
+<div id="tutorialScreen">
+
+    <div class="tutorialBox">
+<img id="tutorialImage" src="" alt="Tutorial">
+
+<div id="tutorialPage"></div>
+
+<h2 id="tutorialTitle"></h2>
+
+<div id="tutorialContent"></div>
+
+        <div id="tutorialPage"></div>
+
+        <h2 id="tutorialTitle"></h2>
+
+        <div id="tutorialContent"></div>
+
+        <div class="tutorialButtons">
+
+            <button id="prevTutorial">
+
+                ◀ Trước
+
+            </button>
+
+            <button id="nextTutorial">
+
+                Sau ▶
+
+            </button>
+
+        </div>
+
+        <button id="closeTutorial">
+
+            Đóng
+
+        </button>
+
+    </div>
+
+</div>
+
 <div class="game">
 <div class="top">
 <div class="top">
@@ -457,6 +573,7 @@ let stats={
     energy:50,
     academic:50
 };
+let tutorialIndex=0;
 let day=1;
 let inputLocked = false;
 let recentCards = [];
@@ -546,6 +663,135 @@ const flagNames = {
     failedexam:"Thi trượt"
 
 };
+const tutorials = [
+
+{
+    title: "🎯 Mục tiêu của trò chơi",
+
+    image: "images/stats.jpg",
+
+    content: `
+        <p>
+            Mục tiêu của <b>Your Unhealthy Life</b> là sống sót và cân bằng cuộc sống của bạn.
+        </p>
+
+        <br>
+
+        <p>
+            Bạn sẽ phải quản lý <b>5 chỉ số chính</b>:
+        </p>
+
+        <p>
+            🧠 Tinh thần<br>
+            💰 Tài chính<br>
+            👥 Quan hệ xã hội<br>
+            ⚡ Năng lượng<br>
+            🎓 Học lực
+        </p>
+
+        <br>
+
+        <p>
+            Mỗi quyết định sẽ làm tăng hoặc giảm một hay nhiều chỉ số.
+        </p>
+
+        <br>
+
+        <p>
+            <b>Nếu bất kỳ chỉ số nào giảm xuống 0, trò chơi sẽ kết thúc ngay lập tức.</b>
+        </p>
+    `
+},
+
+{
+    title: "🃏 Cách đưa ra lựa chọn",
+
+    image: "images/choice.jpg",
+
+    content: `
+        <p>
+            Trong mỗi ngày, bạn sẽ nhận được một sự kiện cùng với hai lựa chọn khác nhau.
+        </p>
+
+        <br>
+
+        <p>
+            ⬅ <b>Quẹt sang trái</b> để chọn phương án bên trái.
+        </p>
+
+        <p>
+            ➡ <b>Quẹt sang phải</b> để chọn phương án bên phải.
+        </p>
+
+        <br>
+
+        <p>
+            Bên dưới mỗi lựa chọn sẽ xuất hiện các biểu tượng chỉ số bị ảnh hưởng.
+        </p>
+
+        <p>
+            Chúng giúp bạn dự đoán hậu quả trước khi quyết định.
+        </p>
+
+        <br>
+
+        <p>
+            Không có lựa chọn nào hoàn toàn đúng hay sai — mọi quyết định đều có cái giá của nó.
+        </p>
+    `
+},
+
+{
+    title: "🏷️ Hệ thống Flag",
+
+    image: "images/flag.jpg",
+
+    content: `
+        <p>
+            Một số quyết định sẽ mở khóa các <b>Flag</b>.
+        </p>
+
+        <br>
+
+        <p>
+            Flag là những trạng thái đặc biệt của nhân vật, ví dụ:
+        </p>
+
+        <p>
+            💼 Có việc làm<br>
+            ❤️ Có người yêu<br>
+            💪 Tập gym<br>
+            📚 Chăm học<br>
+            🐱 Nuôi thú cưng
+        </p>
+
+        <br>
+
+        <p>
+            Các Flag sẽ mở khóa những sự kiện mới, thay đổi hướng phát triển của câu chuyện và ảnh hưởng đến các kết thúc bạn có thể đạt được.
+        </p>
+
+        <br>
+
+        <p>
+            Hãy thử nhiều cách chơi khác nhau để khám phá tất cả các sự kiện ẩn.
+        </p>
+    `
+},
+
+{
+    title: "❓",
+
+    image: "",
+
+    content: `
+        <p style="font-size:24px;">
+            Coming Soon...
+        </p>
+    `
+}
+
+];
 
 const cards=[
 ["Báo thức","Chuông báo thức reo lúc 6h sáng. Bạn có tiết học lúc 7h.","Ngủ tiếp",{mental:6,energy:5,academic:-6,},"Thức dậy đi học",{academic:3,energy:-7,mental:-12,flag:"hardworking"},"ded.png"],
@@ -1278,6 +1524,29 @@ document.addEventListener("click", startMusic);
 document.addEventListener("touchstart", startMusic);
 
 const startBtn=document.getElementById("startBtn");
+const tutorialBtn =
+document.getElementById("tutorialBtn");
+
+const tutorialScreen =
+document.getElementById("tutorialScreen");
+
+const tutorialTitle =
+document.getElementById("tutorialTitle");
+
+const tutorialContent =
+document.getElementById("tutorialContent");
+
+const tutorialPageText =
+document.getElementById("tutorialPage");
+
+const nextTutorial =
+document.getElementById("nextTutorial");
+
+const prevTutorial =
+document.getElementById("prevTutorial");
+
+const closeTutorial =
+document.getElementById("closeTutorial");
 const startScreen=document.getElementById("startScreen");
 
 startBtn.onclick = function(){
@@ -1354,6 +1623,69 @@ document.addEventListener("keydown",(e)=>{
     }
 
 });
+
+const tutorialImage =
+document.getElementById("tutorialImage");
+
+function renderTutorial(){
+
+    tutorialTitle.innerHTML =
+        tutorials[tutorialIndex].title;
+
+    tutorialContent.innerHTML =
+        tutorials[tutorialIndex].content;
+
+    tutorialPageText.textContent =
+        `${tutorialIndex + 1}/${tutorials.length}`;
+
+    tutorialImage.src =
+        tutorials[tutorialIndex].image;
+
+    tutorialImage.style.display =
+        tutorials[tutorialIndex].image ? "block" : "none";
+
+    prevTutorial.disabled =
+        tutorialIndex === 0;
+
+    nextTutorial.disabled =
+        tutorialIndex === tutorials.length - 1;
+}
+tutorialBtn.onclick=()=>{
+
+tutorialIndex=0;
+
+renderTutorial();
+
+tutorialScreen.style.display="flex";
+
+}
+closeTutorial.onclick=()=>{
+
+tutorialScreen.style.display="none";
+
+}
+nextTutorial.onclick=()=>{
+
+if(tutorialIndex<tutorials.length-1){
+
+tutorialIndex++;
+
+renderTutorial();
+
+}
+
+}
+prevTutorial.onclick=()=>{
+
+if(tutorialIndex>0){
+
+tutorialIndex--;
+
+renderTutorial();
+
+}
+
+}
 
 renderStats();
 updateBackground();
