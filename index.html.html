@@ -765,7 +765,7 @@ for(const card of available){
     }
 }
 
-    current = available[Math.floor(Math.random()*available.length)];
+    current = pool[Math.floor(Math.random()*pool.length)];
 
     // Lưu vào lịch sử
     recentCards.push(current);
@@ -774,10 +774,7 @@ for(const card of available){
 
         recentCards.shift();
 
-
 }
-
-current = pool[Math.floor(Math.random()*pool.length)]; }
 
     title.textContent = current[0];
     text.textContent = current[1];
