@@ -728,6 +728,7 @@ function nextCard(){
 
     );
 
+
     // Nếu hết bài hợp lệ thì reset cooldown
     if(available.length === 0){
 
@@ -736,6 +737,33 @@ function nextCard(){
         available = cards.filter(checkCondition);
 
     }
+let pool = [];
+
+for(const card of available){
+
+    let weight = 1;
+
+    const condition = card[7];
+
+    if(condition?.requireFlag && flags[condition.requireFlag]){
+
+        weight = 5;
+
+    }
+
+    if(condition?.requireFlags &&
+       condition.requireFlags.every(f => flags[f])){
+
+        weight = 5;
+
+    }
+
+    for(let i = 0; i < weight; i++){
+
+        pool.push(card);
+
+    }
+}
 
     current = available[Math.floor(Math.random()*available.length)];
 
@@ -746,37 +774,6 @@ function nextCard(){
 
         recentCards.shift();
 
-   let pool = [];
-
-for(const card of cards){
-
-    if(!checkCondition(card)) continue;
-
-    let weight = 1;
-
-    const condition = card[7];
-
-    if(condition?.requireFlag && flags[condition.requireFlag]){
-
-        weight = 5;      // tăng xác suất gấp 4
-
-    }
-
-    if(condition?.requireFlags){
-
-        if(condition.requireFlags.every(f=>flags[f])){
-
-            weight = 5;
-
-        }
-
-    }
-
-    for(let i=0;i<weight;i++){
-
-        pool.push(card);
-
-    }
 
 }
 
