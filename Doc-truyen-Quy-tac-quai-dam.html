@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phó Bản Quy Tắc Quái Đàm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: one narrow reading column; home widens a little for the table of contents. Ink on cool paper, one warning-sign red. */
+:root{
+  --paper:#f5f4f2;
+  --surface:#ffffff;
+  --ink:#1c1a1b;
+  --muted:#6b6466;
+  --line:#ddd7d5;
+  --accent:#9b1c23;
+  --accent-soft:#9b1c2314;
+  --display:"Playfair Display","Noto Serif",Georgia,serif;
+  --body:"Literata","Noto Serif",Georgia,serif;
+  --ui:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --fs:19px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#131112; --surface:#1b1819; --ink:#e8e3e1; --muted:#9c9395;
+    --line:#2e292a; --accent:#e25a5f; --accent-soft:#e25a5f1f; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#131112; --surface:#1b1819; --ink:#e8e3e1; --muted:#9c9395;
+  --line:#2e292a; --accent:#e25a5f; --accent-soft:#e25a5f1f; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.wrap{max-width:880px;margin:0 auto;padding:40px 20px 80px}
+.wrap.reading{max-width:720px}
+
+.eyebrow{font-family:var(--ui);font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0}
+.muted{color:var(--muted)}
+
+/* Home */
+.hero{display:flex;flex-direction:column;gap:14px;padding:24px 0 36px;border-bottom:1px solid var(--line)}
+.novel-title{font-family:var(--display);font-weight:800;font-size:clamp(38px,7vw,68px);line-height:1.05;letter-spacing:-.01em;margin:0;text-wrap:balance}
+.novel-sub{display:block;font-weight:600;font-size:.52em;line-height:1.2;margin-top:12px;color:var(--muted)}
+.byline{margin:0;color:var(--muted)}
+.intro{font-family:var(--body);font-size:17px;line-height:1.7;max-width:62ch}
+.intro p{margin:0 0 .7em}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+.continue{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:28px 0 0;padding:14px 18px;border:1px solid var(--line);border-left:3px solid var(--accent);background:var(--surface);border-radius:6px;text-decoration:none}
+.continue:hover{border-color:var(--accent)}
+.continue b{font-weight:600}
+
+.toc{padding-top:36px}
+.toc-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 16px;margin-bottom:18px}
+.toc-head h2{font-family:var(--display);font-size:30px;margin:0}
+.toc-head .count{color:var(--muted);font-variant-numeric:tabular-nums}
+.toc-head .spacer{flex:1}
+.toc-tools{display:flex;flex-wrap:wrap;gap:8px}
+.toc-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;column-gap:32px}
+.toc-list li{border-bottom:1px solid var(--line)}
+.toc-list a{display:flex;gap:14px;align-items:baseline;padding:11px 4px;text-decoration:none;font-family:var(--body);font-size:17px}
+.toc-list a:hover .t{color:var(--accent)}
+.toc-list .n{font-family:var(--ui);font-size:13px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums;min-width:86px;white-space:nowrap}
+.toc-list .t{flex:1;overflow-wrap:anywhere}
+.toc-list .here{font-family:var(--ui);font-size:12px;color:var(--muted);white-space:nowrap}
+.state{padding:28px 0;color:var(--muted);font-size:16px}
+.state strong{color:var(--ink);font-weight:600}
+
+/* Chapter */
+.crumb{display:inline-block;font-family:var(--display);font-weight:600;font-size:17px;text-decoration:none;color:var(--muted);margin-bottom:28px}
+.crumb:hover{color:var(--accent)}
+.ch-head{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
+.ch-title{font-family:var(--display);font-weight:800;font-size:clamp(30px,5vw,44px);line-height:1.15;margin:0;text-wrap:balance}
+.ch-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:22px}
+.ch-tools .spacer{flex:1}
+.ch-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;margin:8px 0 32px}
+.ch-nav .btn:first-child{justify-self:start}
+.ch-nav .btn:last-child{justify-self:end}
+.ch-nav.bottom{margin:48px 0 0;padding-top:28px;border-top:1px solid var(--line)}
+.ch-body{font-family:var(--body);font-size:var(--fs);line-height:1.8;max-width:65ch}
+.ch-body p{margin:0 0 1.05em}
+.ch-body hr{border:0;text-align:center;margin:1.6em 0}
+.ch-body hr::after{content:"✦ ✦ ✦";color:var(--muted);font-size:.8em;letter-spacing:.4em}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:8px 16px;border:1px solid var(--line);border-radius:6px;background:var(--surface);font-family:var(--ui);font-size:15px;font-weight:500;text-decoration:none;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent}
+.btn.small{min-height:34px;padding:5px 12px;font-size:14px}
+.btn.danger{color:var(--accent)}
+.btn.danger:hover{border-color:var(--accent)}
+.btn.disabled,.btn:disabled{opacity:.4;pointer-events:none}
+.fs-group{display:inline-flex}
+.fs-group .btn{border-radius:0}
+.fs-group .btn:first-child{border-radius:6px 0 0 6px}
+.fs-group .btn:last-child{border-radius:0 6px 6px 0;margin-left:-1px}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:#0009;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto;z-index:20}
+.overlay[hidden]{display:none}
+.modal{background:var(--paper);border:1px solid var(--line);border-radius:10px;width:100%;max-width:760px;padding:24px;display:flex;flex-direction:column;gap:16px;margin:auto 0}
+.modal.narrow{max-width:460px}
+.modal h3{font-family:var(--display);font-size:26px;margin:0}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:14px;font-weight:600}
+.row{display:grid;grid-template-columns:140px 1fr;gap:14px}
+.input,.textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+.input:focus,.textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.textarea{font-family:var(--body);font-size:16px;line-height:1.6;min-height:340px;resize:vertical}
+.textarea.short{min-height:120px}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14px}
+.check input{margin-top:3px;accent-color:var(--accent)}
+.hint{font-size:14px;color:var(--muted);margin:0}
+.error{font-size:14px;color:var(--accent);margin:0;font-weight:500}
+.actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px}
+.preview{border:1px solid var(--line);border-radius:6px;background:var(--surface);max-height:220px;overflow-y:auto}
+.preview div{display:flex;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line);font-size:14px}
+.preview div:last-child{border-bottom:0}
+.preview .pn{color:var(--accent);font-weight:600;min-width:84px;font-variant-numeric:tabular-nums}
+.preview .pt{flex:1;overflow-wrap:anywhere}
+.preview .pw{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tag{font-size:12px;font-weight:600;padding:1px 7px;border-radius:99px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+
+.backup{margin-top:56px;padding-top:28px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+.backup .toc-head{margin:0}
+.backup .hint{max-width:62ch}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:6px;font-size:15px;z-index:30;max-width:calc(100% - 32px)}
+.toast[hidden]{display:none}
+
+@media (max-width:640px){
+  .wrap{padding:24px 16px 64px}
+  .toc-list{grid-template-columns:1fr}
+  .row{grid-template-columns:1fr}
+  .ch-nav{grid-template-columns:1fr 1fr}
+  .ch-nav .mid{grid-column:1 / -1;grid-row:2}
+  .modal{padding:18px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .btn,.continue{transition:border-color .15s,filter .15s}
+}
+</style>
+</head>
+<body>
+<div id="view"></div>
+<div class="overlay" id="overlay" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- small helpers ---------- */
+const LS={
+  get(k){try{return localStorage.getItem(k)}catch(e){return null}},
+  set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+};
+function h(tag,props){
+  const el=document.createElement(tag);
+  if(props){for(const k in props){const v=props[k];
+    if(v==null||v===false)continue;
+    if(k==="class")el.className=v;
+    else if(k==="text")el.textContent=v;
+    else if(k.slice(0,2)==="on")el.addEventListener(k.slice(2),v);
+    else if(k==="value")el.value=v;
+    else if(k==="checked")el.checked=!!v;
+    else el.setAttribute(k,v===true?"":v);
+  }}
+  for(let i=2;i<arguments.length;i++)append(el,arguments[i]);
+  return el;
+}
+function append(el,c){
+  if(c==null||c===false)return;
+  if(Array.isArray(c)){c.forEach(x=>append(el,x));return;}
+  el.append(c instanceof Node?c:document.createTextNode(String(c)));
+}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const fmtNum=n=>String(n);
+const countWords=s=>{const m=(s||"").trim().match(/\S+/g);return m?m.length:0;};
+const fmtInt=n=>n.toLocaleString("vi-VN");
+const newId=()=>"c"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+
+function paras(text){
+  const out=[];
+  String(text||"").replace(/\r\n?/g,"\n").split("\n").forEach(line=>{
+    const l=line.trim();
+    if(!l)return;
+    if(/^(\*{3,}|-{3,}|—{2,}|~{3,}|\* \* \*)$/.test(l))out.push(h("hr"));
+    else out.push(h("p",{text:l}));
+  });
+  return out;
+}
+
+/* "Chương 12: Tên chương" / "Chương 12 - Tên" / "Chương 12" */
+const HEAD_RE=/^\s*(?:chương|chuong|chapter)\s+(\d+(?:\.\d+)?)\s*(?:[:：.\-–—]\s*(.*))?$/iu;
+function parseHeading(line){
+  const m=HEAD_RE.exec(line||"");
+  if(!m)return null;
+  return {num:parseFloat(m[1]),title:(m[2]||"").trim()};
+}
+function stripNotes(text){
+  let t=text;
+  t=t.replace(/\n[ \t]*-{3,}[ \t]*\n(?=[\s\S]*?(?:thuật ngữ mới|ghi chú dịch))[\s\S]*$/iu,"");
+  t=t.replace(/\n[ \t]*\**[ \t]*(?:thuật ngữ mới|ghi chú dịch)\**[ \t]*:?[\s\S]*$/iu,"");
+  return t;
+}
+function cleanContent(raw,strip){
+  let t=String(raw||"").replace(/\r\n?/g,"\n");
+  if(strip)t=stripNotes(t);
+  const lines=t.split("\n");
+  let i=0;while(i<lines.length&&!lines[i].trim())i++;
+  if(i<lines.length&&parseHeading(lines[i]))lines.splice(0,i+1);
+  return lines.join("\n").trim();
+}
+function splitBulk(raw,strip){
+  const lines=String(raw||"").replace(/\r\n?/g,"\n").split("\n");
+  const out=[];let cur=null;
+  for(const line of lines){
+    const hd=line.trim().length<160?parseHeading(line):null;
+    if(hd){cur={num:hd.num,title:hd.title,lines:[]};out.push(cur);}
+    else if(cur)cur.lines.push(line);
+  }
+  return out.map(c=>{
+    let content=c.lines.join("\n");
+    if(strip)content=stripNotes("\n"+content);
+    return {num:c.num,title:c.title,content:content.trim()};
+  }).filter(c=>c.content);
+}
+
+/* ---------- local storage engine (IndexedDB in this browser) ---------- */
+const DEFAULT_TITLE="Phó bản quy tắc quái đàm: Trời sinh ta phản nghịch thiên cốt";
+function LocalStore(){
+  const STORE="docs";let dbp=null;const listeners=new Set();
+  const wrapErr=e=>(e&&e.code)?e:{code:(e&&e.name==="QuotaExceededError")?"quota_exceeded":"unavailable",message:String(e&&e.message||e)};
+  function open(){
+    if(!dbp)dbp=new Promise((res,rej)=>{
+      let r;try{r=indexedDB.open("doc-truyen-qtqd",1);}catch(e){rej(e);return;}
+      r.onupgradeneeded=()=>{r.result.createObjectStore(STORE);};
+      r.onsuccess=()=>res(r.result);
+      r.onerror=()=>rej(r.error);
+    });
+    return dbp;
+  }
+  function run(mode,fn){
+    return open().then(db=>new Promise((res,rej)=>{
+      const t=db.transaction(STORE,mode);let result;
+      const req=fn(t.objectStore(STORE));
+      if(req)req.onsuccess=()=>{result=req.result;};
+      t.oncomplete=()=>res(result);
+      t.onerror=()=>rej(wrapErr(t.error));
+      t.onabort=()=>rej(wrapErr(t.error));
+    })).catch(e=>{throw wrapErr(e);});
+  }
+  function snapDoc(path,data){
+    const exists=data!==undefined;
+    return {id:path.split("/").pop(),exists,data:()=>exists?data:undefined,metadata:{fromCache:false,hasPendingWrites:false}};
+  }
+  function cursorAll(range,keep){
+    return open().then(db=>new Promise((res,rej)=>{
+      const out=[];const t=db.transaction(STORE,"readonly");
+      const req=t.objectStore(STORE).openCursor(range);
+      req.onsuccess=()=>{const c=req.result;if(c){if(keep(String(c.key)))out.push([String(c.key),c.value]);c.continue();}};
+      t.oncomplete=()=>res(out);
+      t.onerror=()=>rej(wrapErr(t.error));
+    })).catch(e=>{throw wrapErr(e);});
+  }
+  function notify(path){listeners.forEach(l=>{if(l.kind==="doc"?l.path===path:path.indexOf(l.path+"/")===0)l.fire();});}
+  function docRef(path){
+    const ref={
+      id:path.split("/").pop(),path,
+      get:()=>run("readonly",st=>st.get(path)).then(v=>snapDoc(path,v)),
+      set:data=>run("readwrite",st=>st.put(JSON.parse(JSON.stringify(data)),path)).then(()=>notify(path)),
+      delete:()=>run("readwrite",st=>st.delete(path)).then(()=>notify(path)),
+      onSnapshot(next,err){
+        const l={kind:"doc",path,fire:()=>ref.get().then(next,err||(()=>{}))};
+        listeners.add(l);l.fire();return ()=>listeners.delete(l);
+      }
+    };
+    return ref;
+  }
+  function colRef(col){
+    const depth=col.split("/").length+1;
+    const q={
+      path:col,
+      orderBy:()=>q,
+      doc:id=>docRef(col+"/"+id),
+      onSnapshot(next,err){
+        const l={kind:"col",path:col,fire:()=>cursorAll(IDBKeyRange.bound(col+"/",col+"/￿"),k=>k.split("/").length===depth)
+          .then(rows=>{const docs=rows.map(r=>snapDoc(r[0],r[1]));next({docs,size:docs.length,empty:!docs.length,metadata:{fromCache:false,hasPendingWrites:false}});},err||(()=>{}))};
+        listeners.add(l);l.fire();return ()=>listeners.delete(l);
+      }
+    };
+    return q;
+  }
+  return {
+    doc:docRef,collection:colRef,
+    exportAll:()=>cursorAll(undefined,()=>true).then(rows=>{const o={};rows.forEach(r=>{o[r[0]]=r[1];});return o;}),
+    replaceAll:docs=>open().then(db=>new Promise((res,rej)=>{
+      const t=db.transaction(STORE,"readwrite");const st=t.objectStore(STORE);
+      st.clear();for(const k in docs)st.put(docs[k],k);
+      t.oncomplete=()=>{res();listeners.forEach(l=>l.fire());};
+      t.onerror=()=>rej(wrapErr(t.error));t.onabort=()=>rej(wrapErr(t.error));
+    }))
+  };
+}
+
+/* ---------- backup ---------- */
+const pad=n=>String(n).padStart(2,"0");
+function fmtDate(ms){const d=new Date(ms);return pad(d.getDate())+"/"+pad(d.getMonth()+1)+"/"+d.getFullYear()+" lúc "+pad(d.getHours())+":"+pad(d.getMinutes());}
+async function doBackup(){
+  try{
+    const docs=await S.db.exportAll();
+    const payload={app:"doc-truyen",version:1,exportedAt:new Date().toISOString(),docs};
+    const blob=new Blob([JSON.stringify(payload)],{type:"application/json"});
+    const url=URL.createObjectURL(blob);
+    const d=new Date();
+    const a=h("a",{href:url,download:"sao-luu-truyen-"+d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+".json"});
+    document.body.append(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),10000);
+    LS.set("qt-backup",String(Date.now()));
+    render();toast("Đã tải file sao lưu về máy");
+  }catch(e){toast("Không tạo được file sao lưu. "+errMsg(e));}
+}
+const KEY_RE=/^(chapters|texts|novel)\/[A-Za-z0-9_\-.~:@+]+$/;
+function pickRestore(){
+  const inp=h("input",{type:"file",accept:".json,application/json"});
+  inp.addEventListener("change",()=>{
+    const f=inp.files&&inp.files[0];if(!f)return;
+    f.text().then(txt=>{
+      let p;try{p=JSON.parse(txt);}catch(e){toast("File này không phải file sao lưu hợp lệ.");return;}
+      const docs=p&&p.app==="doc-truyen"&&p.docs&&typeof p.docs==="object"?p.docs:null;
+      if(!docs){toast("File này không phải file sao lưu của trang đọc truyện.");return;}
+      const clean={};let n=0;
+      for(const k in docs){if(KEY_RE.test(k)&&docs[k]&&typeof docs[k]==="object"){clean[k]=docs[k];if(k.indexOf("chapters/")===0)n++;}}
+      openRestore(clean,n,p.exportedAt);
+    });
+  });
+  inp.click();
+}
+function openRestore(docs,n,when){
+  const err=h("p",{class:"error",role:"alert"});
+  const go=h("button",{class:"btn primary",type:"button"},"Khôi phục");
+  const modal=h("div",{class:"modal narrow",role:"dialog","aria-modal":"true","aria-labelledby":"rs-h"},
+    h("h3",{id:"rs-h",text:"Khôi phục "+n+" chương?"}),
+    h("p",{class:"hint",text:"File sao lưu"+(when?" tạo ngày "+fmtDate(Date.parse(when)):"")+" có "+n+" chương. Toàn bộ dữ liệu hiện có trên trang ("+S.chapters.length+" chương) sẽ được thay bằng nội dung trong file."}),
+    err,
+    h("div",{class:"actions"},h("button",{class:"btn ghost",type:"button",onclick:closeModal},"Hủy"),go));
+  go.addEventListener("click",async()=>{
+    go.disabled=true;go.textContent="Đang khôi phục…";
+    try{
+      await S.db.replaceAll(docs);
+      S.texts.clear();S.stamps.clear();S.textErr.clear();
+      closeModal();toast("Đã khôi phục "+n+" chương");location.hash="muc-luc";render();
+    }catch(e){err.textContent=errMsg(e);go.disabled=false;go.textContent="Khôi phục";}
+  });
+  openModal(modal,go);
+}
+function backupSection(){
+  const last=parseInt(LS.get("qt-backup"),10)||0;
+  const changed=parseInt(LS.get("qt-changed"),10)||0;
+  const pending=changed>last;
+  return h("section",{class:"backup"},
+    h("div",{class:"toc-head"},h("h2",{text:"Sao lưu"}),pending?h("span",{class:"tag",text:last?"Có thay đổi chưa sao lưu":"Chưa sao lưu lần nào"}):null),
+    h("p",{class:"hint",text:"Các chương được lưu ngay trong trình duyệt này. Nếu xóa dữ liệu duyệt web hoặc đổi sang máy khác, chương sẽ mất, nên sau mỗi lần đăng chương mới hãy tải file sao lưu về. "+(last?"Lần sao lưu gần nhất: "+fmtDate(last)+".":"")}),
+    h("div",{class:"toc-tools"},
+      h("button",{class:"btn small primary",type:"button",onclick:doBackup},"Tải file sao lưu"),
+      h("button",{class:"btn small",type:"button",onclick:pickRestore},"Khôi phục từ file sao lưu"))
+  );
+}
+
+/* ---------- state ---------- */
+const S={
+  db:null,user:null,canWrite:false,noDb:false,
+  chapters:[],chLoaded:false,chConfirmed:false,chError:null,timedOut:false,
+  info:null,
+  texts:new Map(),stamps:new Map(),loadingText:new Set(),textErr:new Map(),
+  sortDesc:LS.get("qt-sort")==="desc",
+  fs:Math.min(26,Math.max(15,parseInt(LS.get("qt-fs"),10)||19))
+};
+function applyFs(){document.documentElement.style.setProperty("--fs",S.fs+"px");}
+
+function errMsg(e){
+  const c=e&&e.code;
+  if(c==="invalid_argument")return "Không lưu được. Có thể bạn không có quyền sửa trang này, hoặc chương quá dài (tối đa khoảng 200.000 ký tự).";
+  if(c==="quota_exceeded")return "Kho dữ liệu của trang đã đầy. Hãy xóa bớt chương cũ rồi thử lại.";
+  if(c==="resource_exhausted")return "Thao tác quá nhanh. Đợi vài giây rồi thử lại.";
+  if(c==="revoked"||c==="not_granted"||c==="capability_disabled")return "Trang không còn quyền truy cập dữ liệu. Hãy mở lại trang.";
+  return "Mất kết nối tới dữ liệu. Kiểm tra mạng rồi thử lại.";
+}
+async function writeDoc(path,data){
+  for(let a=0;;a++){
+    try{await S.db.doc(path).set(data);LS.set("qt-changed",String(Date.now()));return;}
+    catch(e){
+      const c=e&&e.code;
+      if(c==="invalid_argument"&&(e.message||"").indexOf("256")<0){/* permission-style refusal */}
+      if((c==="unavailable"||c==="resource_exhausted")&&a<2){await sleep(c==="resource_exhausted"?2500:700+Math.random()*700);continue;}
+      throw e;
+    }
+  }
+}
+async function deleteDoc(path){
+  for(let a=0;;a++){
+    try{await S.db.doc(path).delete();LS.set("qt-changed",String(Date.now()));return;}
+    catch(e){if(e&&e.code==="unavailable"&&a<1){await sleep(800);continue;}throw e;}
+  }
+}
+
+let toastTimer=null;
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;t.hidden=false;
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true;},2800);
+}
+
+/* ---------- routing ---------- */
+function route(){
+  const hs=location.hash.slice(1);
+  if(hs.indexOf("c-")===0)return {view:"chapter",id:hs.slice(2)};
+  return {view:"home"};
+}
+function novelTitle(){return (S.info&&S.info.title||"").trim();}
+function render(){
+  const r=route();
+  const v=document.getElementById("view");
+  v.replaceChildren(r.view==="chapter"?chapterView(r.id):homeView());
+  const nt=novelTitle()||"Phó Bản Quy Tắc Quái Đàm";
+  if(r.view==="chapter"){
+    const c=S.chapters.find(x=>x.id===r.id);
+    document.title=c?("Chương "+fmtNum(c.num)+(c.title?": "+c.title:"")+" · "+nt.split(/[:：]/)[0]):nt;
+  }else document.title=nt;
+}
+window.addEventListener("hashchange",()=>{
+  render();
+  if(location.hash==="#muc-luc"){const el=document.getElementById("muc-luc");if(el)el.scrollIntoView();}
+  else window.scrollTo(0,0);
+});
+
+/* ---------- home ---------- */
+function homeView(){
+  const wrap=h("div",{class:"wrap"});
+  const t=novelTitle();
+  const parts=t.split(/[:：]/);
+  const main=parts[0].trim();
+  const sub=parts.slice(1).join(":").trim();
+  const info=S.info||{};
+
+  wrap.append(h("header",{class:"hero"},
+    h("p",{class:"eyebrow",text:"Bản dịch tiếng Việt"}),
+    h("h1",{class:"novel-title"},t?main:"Chưa đặt tên truyện",sub?h("span",{class:"novel-sub",text:sub}):null),
+    info.author?h("p",{class:"byline",text:"Tác giả: "+info.author}):null,
+    info.intro?h("div",{class:"intro"},paras(info.intro)):null,
+    S.canWrite?h("div",{class:"hero-actions"},
+      h("button",{class:"btn ghost small",type:"button",onclick:openInfo},t?"Sửa tên và giới thiệu truyện":"Đặt tên truyện")):null
+  ));
+
+  const lastId=LS.get("qt-last");
+  const last=lastId&&S.chapters.find(c=>c.id===lastId);
+  if(last){
+    wrap.append(h("a",{class:"continue",href:"#c-"+last.id},
+      h("span",{class:"eyebrow",text:"Đọc tiếp"}),
+      h("span",null,h("b",{text:"Chương "+fmtNum(last.num)}),last.title?": "+last.title:"")
+    ));
+  }
+
+  const sec=h("section",{class:"toc",id:"muc-luc"});
+  const n=S.chapters.length;
+  sec.append(h("div",{class:"toc-head"},
+    h("h2",{text:"Mục lục"}),
+    S.chLoaded&&!S.chError?h("span",{class:"count",text:fmtInt(n)+" chương"}):null,
+    h("span",{class:"spacer"}),
+    h("div",{class:"toc-tools"},
+      n>1?h("button",{class:"btn small ghost",type:"button",onclick:()=>{S.sortDesc=!S.sortDesc;LS.set("qt-sort",S.sortDesc?"desc":"asc");render();}},S.sortDesc?"Mới nhất trước":"Cũ nhất trước"):null,
+      S.canWrite&&S.db?h("button",{class:"btn small",type:"button",onclick:openBulk},"Nhập nhiều chương"):null,
+      S.canWrite&&S.db?h("button",{class:"btn small primary",type:"button",onclick:()=>openEditor(null)},"+ Thêm chương"):null
+    )
+  ));
+
+  if(S.noDb){
+    sec.append(h("div",{class:"state"},h("strong",{text:"Trình duyệt không cho trang lưu dữ liệu."})," Nếu đang mở bằng cửa sổ ẩn danh, hãy mở lại bằng cửa sổ thường."));
+  }else if(S.chError){
+    sec.append(h("div",{class:"state"},h("strong",{text:"Không tải được mục lục."})," "+errMsg(S.chError)));
+  }else if(!S.chLoaded){
+    sec.append(h("div",{class:"state",text:S.timedOut?"Chưa kết nối được tới dữ liệu. Kiểm tra mạng, trang sẽ tự tải khi có kết nối.":"Đang tải mục lục…"}));
+  }else if(!n){
+    sec.append(h("div",{class:"state"},h("strong",{text:"Chưa có chương nào."}),S.canWrite?" Bấm “+ Thêm chương” để đăng chương đầu tiên, hoặc “Nhập nhiều chương” để dán một lúc nhiều chương.":""));
+  }else{
+    if(S.timedOut&&!S.chConfirmed)sec.append(h("p",{class:"hint",text:"Đang hiển thị bản lưu trước đó, có thể chưa phải mới nhất."}));
+    const list=S.sortDesc?S.chapters.slice().reverse():S.chapters;
+    sec.append(h("ol",{class:"toc-list"},list.map(c=>h("li",null,
+      h("a",{href:"#c-"+c.id},
+        h("span",{class:"n",text:"Chương "+fmtNum(c.num)}),
+        h("span",{class:"t",text:c.title||"—"}),
+        c.id===lastId?h("span",{class:"here",text:"đang đọc"}):null)
+    ))));
+  }
+  wrap.append(sec);
+  if(S.db)wrap.append(backupSection());
+  return wrap;
+}
+
+/* ---------- chapter ---------- */
+async function loadText(id){
+  if(!S.db||S.texts.has(id)||S.loadingText.has(id))return;
+  S.loadingText.add(id);S.textErr.delete(id);
+  try{
+    let snap;
+    try{snap=await S.db.doc("texts/"+id).get();}
+    catch(e){if(e&&e.code==="unavailable"){await sleep(800);snap=await S.db.doc("texts/"+id).get();}else throw e;}
+    S.texts.set(id,snap.exists?String((snap.data()||{}).content||""):"");
+    const c=S.chapters.find(x=>x.id===id);if(c)S.stamps.set(id,c.updatedAt||0);
+  }catch(e){S.textErr.set(id,e);}
+  finally{
+    S.loadingText.delete(id);
+    const r=route();if(r.view==="chapter"&&r.id===id)render();
+  }
+}
+
+function chapterView(id){
+  const wrap=h("div",{class:"wrap reading"});
+  const nt=novelTitle();
+  wrap.append(h("a",{class:"crumb",href:"#"},"← "+(nt?nt.split(/[:：]/)[0].trim():"Trang chủ")));
+  if(!S.chLoaded){
+    wrap.append(h("div",{class:"state",text:S.noDb?"Trình duyệt không cho trang lưu dữ liệu.":(S.timedOut?"Chưa kết nối được tới dữ liệu. Kiểm tra mạng.":"Đang tải chương…")}));
+    return wrap;
+  }
+  const idx=S.chapters.findIndex(c=>c.id===id);
+  if(idx<0){
+    wrap.append(h("div",{class:"state"},h("strong",{text:"Không tìm thấy chương này."})," Có thể chương đã bị xóa. ",h("a",{href:"#muc-luc",text:"Về mục lục"})));
+    return wrap;
+  }
+  const c=S.chapters[idx],prev=S.chapters[idx-1],next=S.chapters[idx+1];
+  LS.set("qt-last",c.id);
+
+  const nav=cls=>h("nav",{class:"ch-nav "+(cls||""),"aria-label":"Chuyển chương"},
+    prev?h("a",{class:"btn",href:"#c-"+prev.id},"← Chương trước"):h("span",{class:"btn disabled","aria-disabled":"true"},"← Chương trước"),
+    h("a",{class:"btn mid",href:"#muc-luc"},"Mục lục"),
+    next?h("a",{class:"btn",href:"#c-"+next.id},"Chương sau →"):h("span",{class:"btn disabled","aria-disabled":"true"},"Chương sau →")
+  );
+
+  wrap.append(h("header",{class:"ch-head"},
+    h("p",{class:"eyebrow",text:"Chương "+fmtNum(c.num)}),
+    h("h1",{class:"ch-title",text:c.title||("Chương "+fmtNum(c.num))})
+  ));
+  wrap.append(h("div",{class:"ch-tools"},
+    h("div",{class:"fs-group",role:"group","aria-label":"Cỡ chữ"},
+      h("button",{class:"btn small",type:"button",title:"Chữ nhỏ hơn","aria-label":"Chữ nhỏ hơn",onclick:()=>{S.fs=Math.max(15,S.fs-1);LS.set("qt-fs",S.fs);applyFs();}},"A−"),
+      h("button",{class:"btn small",type:"button",title:"Chữ to hơn","aria-label":"Chữ to hơn",onclick:()=>{S.fs=Math.min(26,S.fs+1);LS.set("qt-fs",S.fs);applyFs();}},"A+")
+    ),
+    h("span",{class:"spacer"}),
+    S.canWrite?h("button",{class:"btn small",type:"button",onclick:()=>openEditor(c)},"Sửa chương"):null,
+    S.canWrite?h("button",{class:"btn small danger",type:"button",onclick:()=>openDelete(c)},"Xóa"):null
+  ));
+  wrap.append(nav());
+
+  const body=h("article",{class:"ch-body"});
+  if(S.texts.has(c.id)){
+    const txt=S.texts.get(c.id);
+    if(txt)append(body,paras(txt));
+    else body.append(h("p",{class:"muted",text:"Chương này chưa có nội dung."}));
+    if(next&&!S.texts.has(next.id))setTimeout(()=>loadText(next.id),400);
+  }else if(S.textErr.has(c.id)){
+    body.append(h("p",{class:"error",text:errMsg(S.textErr.get(c.id))}),
+      h("button",{class:"btn small",type:"button",onclick:()=>{S.textErr.delete(c.id);loadText(c.id);render();}},"Tải lại"));
+  }else{
+    body.append(h("p",{class:"muted",text:"Đang tải nội dung…"}));
+    loadText(c.id);
+  }
+  wrap.append(body);
+  wrap.append(nav("bottom"));
+  return wrap;
+}
+
+document.addEventListener("keydown",e=>{
+  if(!document.getElementById("overlay").hidden){if(e.key==="Escape")closeModal();return;}
+  const tg=e.target&&e.target.tagName;
+  if(tg==="INPUT"||tg==="TEXTAREA"||e.altKey||e.ctrlKey||e.metaKey)return;
+  const r=route();if(r.view!=="chapter")return;
+  const i=S.chapters.findIndex(c=>c.id===r.id);if(i<0)return;
+  if(e.key==="ArrowLeft"&&S.chapters[i-1])location.hash="c-"+S.chapters[i-1].id;
+  if(e.key==="ArrowRight"&&S.chapters[i+1])location.hash="c-"+S.chapters[i+1].id;
+});
+
+/* ---------- modals ---------- */
+let lastFocus=null;
+function openModal(node,focusEl){
+  const ov=document.getElementById("overlay");
+  lastFocus=document.activeElement;
+  ov.replaceChildren(node);ov.hidden=false;
+  document.body.style.overflow="hidden";
+  setTimeout(()=>{(focusEl||node.querySelector("input,textarea,button")||node).focus();},30);
+}
+function closeModal(){
+  const ov=document.getElementById("overlay");
+  ov.hidden=true;ov.replaceChildren();
+  document.body.style.overflow="";
+  if(lastFocus&&lastFocus.focus)try{lastFocus.focus();}catch(e){}
+}
+document.getElementById("overlay").addEventListener("mousedown",e=>{if(e.target.id==="overlay")e.target.dataset.down="1";});
+document.getElementById("overlay").addEventListener("click",e=>{
+  if(e.target.id==="overlay"&&e.target.dataset.down==="1"&&!e.target.querySelector("[data-busy='1']"))closeModal();
+  e.target.dataset.down="";
+});
+function denyWrites(e){
+  if(e&&e.code==="invalid_argument"&&S.user){
+    S.user.canEdit().then(ce=>{if(!ce){S.canWrite=false;render();}}).catch(()=>{});
+  }
+}
+
+/* Thêm / sửa chương */
+async function openEditor(ch){
+  if(ch&&!S.texts.has(ch.id)){
+    toast("Đang tải nội dung chương…");
+    await loadText(ch.id);
+    if(!S.texts.has(ch.id)){toast("Không tải được nội dung chương để sửa.");return;}
+  }
+  const isNew=!ch;
+  const maxNum=S.chapters.reduce((m,c)=>Math.max(m,c.num),0);
+  const num=h("input",{class:"input",id:"ed-num",type:"number",step:"any",min:"0",inputmode:"decimal",value:String(ch?ch.num:Math.floor(maxNum)+1)});
+  const title=h("input",{class:"input",id:"ed-title",type:"text",placeholder:"Ví dụ: Quy tắc thứ nhất",value:ch?ch.title||"":""});
+  const content=h("textarea",{class:"textarea",id:"ed-content",placeholder:"Dán nội dung chương vào đây…",value:ch?S.texts.get(ch.id)||"":""});
+  const strip=h("input",{type:"checkbox",id:"ed-strip",checked:true});
+  const err=h("p",{class:"error",role:"alert"});
+  const save=h("button",{class:"btn primary",type:"button"},isNew?"Đăng chương":"Lưu thay đổi");
+  let titleTouched=!!(ch&&ch.title);
+  title.addEventListener("input",()=>{titleTouched=true;});
+
+  function autofill(){
+    const first=content.value.replace(/\r\n?/g,"\n").split("\n").find(l=>l.trim());
+    const hd=first&&parseHeading(first);
+    if(!hd)return;
+    if(isNew)num.value=String(hd.num);
+    if(!titleTouched&&hd.title)title.value=hd.title;
+  }
+  content.addEventListener("paste",()=>setTimeout(autofill,0));
+  content.addEventListener("change",autofill);
+
+  save.addEventListener("click",async()=>{
+    err.textContent="";
+    const n=parseFloat(String(num.value).replace(",","."));
+    if(!isFinite(n)||n<0){err.textContent="Hãy nhập số chương (ví dụ 12).";num.focus();return;}
+    const body=cleanContent(content.value,strip.checked);
+    if(!body){err.textContent="Nội dung chương đang trống.";content.focus();return;}
+    if(body.length>200000){err.textContent="Chương quá dài (hơn 200.000 ký tự). Hãy chia thành hai chương.";return;}
+    const dup=S.chapters.find(c=>c.num===n&&(!ch||c.id!==ch.id));
+    if(dup){err.textContent="Đã có Chương "+fmtNum(n)+(dup.title?" ("+dup.title+")":"")+". Hãy đổi số chương, hoặc mở chương đó để sửa.";num.focus();return;}
+    const id=ch?ch.id:newId();
+    const meta={num:n,title:title.value.trim(),words:countWords(body),updatedAt:Date.now()};
+    save.disabled=true;save.textContent="Đang lưu…";modal.dataset.busy="1";
+    try{
+      await writeDoc("texts/"+id,{content:body});
+      S.texts.set(id,body);S.stamps.set(id,meta.updatedAt);
+      await writeDoc("chapters/"+id,meta);
+      modal.dataset.busy="";
+      closeModal();
+      toast("Đã lưu Chương "+fmtNum(n));
+      if(location.hash!=="#c-"+id)location.hash="c-"+id;else render();
+    }catch(e){
+      modal.dataset.busy="";
+      err.textContent=errMsg(e);denyWrites(e);
+      save.disabled=false;save.textContent=isNew?"Đăng chương":"Lưu thay đổi";
+    }
+  });
+
+  const modal=h("div",{class:"modal",role:"dialog","aria-modal":"true","aria-labelledby":"ed-h"},
+    h("h3",{id:"ed-h",text:isNew?"Thêm chương mới":"Sửa Chương "+fmtNum(ch.num)}),
+    h("div",{class:"row"},
+      h("div",{class:"field"},h("label",{for:"ed-num",text:"Số chương"}),num),
+      h("div",{class:"field"},h("label",{for:"ed-title",text:"Tên chương"}),title)
+    ),
+    h("div",{class:"field"},h("label",{for:"ed-content",text:"Nội dung"}),content,
+      h("p",{class:"hint",text:"Mỗi dòng là một đoạn văn. Nếu dòng đầu có dạng “Chương 12: Tên chương”, trang sẽ tự điền số và tên chương rồi bỏ dòng đó khỏi nội dung."})),
+    h("label",{class:"check",for:"ed-strip"},strip,h("span",{text:"Bỏ phần “Thuật ngữ mới” và “Ghi chú dịch” ở cuối bản dịch (nếu có)"})),
+    err,
+    h("div",{class:"actions"},h("button",{class:"btn ghost",type:"button",onclick:closeModal},"Hủy"),save)
+  );
+  openModal(modal,isNew?content:title);
+}
+
+/* Xóa chương */
+function openDelete(ch){
+  const err=h("p",{class:"error",role:"alert"});
+  const del=h("button",{class:"btn primary",type:"button"},"Xóa chương");
+  const modal=h("div",{class:"modal narrow",role:"dialog","aria-modal":"true","aria-labelledby":"del-h"},
+    h("h3",{id:"del-h",text:"Xóa Chương "+fmtNum(ch.num)+"?"}),
+    h("p",{class:"hint",text:(ch.title?"“"+ch.title+"” ":"")+"sẽ bị xóa khỏi mục lục cùng toàn bộ nội dung. Không thể hoàn tác."}),
+    err,
+    h("div",{class:"actions"},h("button",{class:"btn ghost",type:"button",onclick:closeModal},"Giữ lại"),del)
+  );
+  del.addEventListener("click",async()=>{
+    del.disabled=true;del.textContent="Đang xóa…";modal.dataset.busy="1";
+    try{
+      await deleteDoc("chapters/"+ch.id);
+      await deleteDoc("texts/"+ch.id);
+      S.texts.delete(ch.id);
+      modal.dataset.busy="";closeModal();
+      toast("Đã xóa Chương "+fmtNum(ch.num));
+      location.hash="muc-luc";
+    }catch(e){modal.dataset.busy="";err.textContent=errMsg(e);denyWrites(e);del.disabled=false;del.textContent="Xóa chương";}
+  });
+  openModal(modal,del);
+}
+
+/* Nhập nhiều chương */
+function openBulk(){
+  const area=h("textarea",{class:"textarea",id:"bk-content",placeholder:"Chương 1: Tên chương\nNội dung chương 1…\n\nChương 2: Tên chương\nNội dung chương 2…"});
+  const strip=h("input",{type:"checkbox",id:"bk-strip",checked:true});
+  const prev=h("div",{class:"preview"});
+  const status=h("p",{class:"hint"});
+  const err=h("p",{class:"error",role:"alert"});
+  const go=h("button",{class:"btn primary",type:"button",disabled:true},"Đăng chương");
+  let parsed=[];
+  function refresh(){
+    parsed=splitBulk(area.value,strip.checked);
+    prev.replaceChildren();
+    if(!parsed.length){
+      prev.hidden=!area.value.trim();
+      status.textContent=area.value.trim()?"Chưa tìm thấy chương nào. Mỗi chương cần bắt đầu bằng một dòng “Chương 12: Tên chương”.":"";
+      go.disabled=true;go.textContent="Đăng chương";return;
+    }
+    prev.hidden=false;
+    const seen=new Set();let over=0,dupIn=0;
+    parsed.forEach(c=>{
+      const ex=S.chapters.some(x=>x.num===c.num);if(ex)over++;
+      const twice=seen.has(c.num);if(twice)dupIn++;seen.add(c.num);
+      prev.append(h("div",null,
+        h("span",{class:"pn",text:"Chương "+fmtNum(c.num)}),
+        h("span",{class:"pt",text:c.title||"—"}),
+        ex?h("span",{class:"tag",text:"ghi đè"}):null,
+        twice?h("span",{class:"tag",text:"trùng số"}):null,
+        h("span",{class:"pw",text:fmtInt(countWords(c.content))+" từ"})));
+    });
+    status.textContent="Tìm thấy "+parsed.length+" chương."+(over?" "+over+" chương đã có sẽ được thay bằng bản mới.":"")+(dupIn?" Có số chương bị lặp: bản sau sẽ đè bản trước.":"");
+    go.disabled=false;go.textContent="Đăng "+parsed.length+" chương";
+  }
+  let tmr=null;
+  area.addEventListener("input",()=>{clearTimeout(tmr);tmr=setTimeout(refresh,250);});
+  strip.addEventListener("change",refresh);
+
+  go.addEventListener("click",async()=>{
+    err.textContent="";
+    const tooLong=parsed.find(c=>c.content.length>200000);
+    if(tooLong){err.textContent="Chương "+fmtNum(tooLong.num)+" quá dài (hơn 200.000 ký tự). Hãy chia nhỏ.";return;}
+    go.disabled=true;area.disabled=true;modal.dataset.busy="1";
+    let done=0;
+    const ids=new Map(S.chapters.map(c=>[c.num,c.id]));
+    try{
+      for(const c of parsed){
+        status.textContent="Đang đăng "+(done+1)+"/"+parsed.length+": Chương "+fmtNum(c.num)+"…";
+        const id=ids.get(c.num)||newId();ids.set(c.num,id);
+        const meta={num:c.num,title:c.title,words:countWords(c.content),updatedAt:Date.now()};
+        await writeDoc("texts/"+id,{content:c.content});
+        S.texts.set(id,c.content);S.stamps.set(id,meta.updatedAt);
+        await writeDoc("chapters/"+id,meta);
+        done++;
+        await sleep(250);
+      }
+      modal.dataset.busy="";closeModal();
+      toast("Đã đăng "+done+" chương");
+      location.hash="muc-luc";
+    }catch(e){
+      modal.dataset.busy="";
+      err.textContent="Dừng sau "+done+"/"+parsed.length+" chương. "+errMsg(e);denyWrites(e);
+      status.textContent="Các chương đã đăng vẫn được giữ. Bấm lại để đăng tiếp (chương đã có sẽ được ghi đè, không bị nhân đôi).";
+      go.disabled=false;area.disabled=false;
+    }
+  });
+
+  const modal=h("div",{class:"modal",role:"dialog","aria-modal":"true","aria-labelledby":"bk-h"},
+    h("h3",{id:"bk-h",text:"Nhập nhiều chương"}),
+    h("p",{class:"hint",text:"Dán liền nhiều chương vào ô dưới. Trang tách chương theo các dòng bắt đầu bằng “Chương [số]: [tên chương]”. Chương trùng số với chương đã có sẽ được thay bằng bản mới."}),
+    h("div",{class:"field"},h("label",{for:"bk-content",text:"Nội dung các chương"}),area),
+    h("label",{class:"check",for:"bk-strip"},strip,h("span",{text:"Bỏ phần “Thuật ngữ mới” và “Ghi chú dịch” ở cuối mỗi chương"})),
+    prev,status,err,
+    h("div",{class:"actions"},h("button",{class:"btn ghost",type:"button",onclick:closeModal},"Hủy"),go)
+  );
+  prev.hidden=true;
+  openModal(modal,area);
+}
+
+/* Tên & giới thiệu truyện */
+function openInfo(){
+  const info=S.info||{};
+  const t=h("input",{class:"input",id:"in-title",type:"text",value:info.title||"",placeholder:"Tên truyện"});
+  const a=h("input",{class:"input",id:"in-author",type:"text",value:info.author||"",placeholder:"Có thể để trống"});
+  const intro=h("textarea",{class:"textarea short",id:"in-intro",value:info.intro||"",placeholder:"Vài dòng giới thiệu truyện, có thể để trống"});
+  const err=h("p",{class:"error",role:"alert"});
+  const save=h("button",{class:"btn primary",type:"button"},"Lưu");
+  save.addEventListener("click",async()=>{
+    if(!t.value.trim()){err.textContent="Hãy nhập tên truyện.";t.focus();return;}
+    save.disabled=true;save.textContent="Đang lưu…";
+    try{
+      await writeDoc("novel/info",{title:t.value.trim(),author:a.value.trim(),intro:intro.value.trim()});
+      closeModal();toast("Đã lưu thông tin truyện");
+    }catch(e){err.textContent=errMsg(e);denyWrites(e);save.disabled=false;save.textContent="Lưu";}
+  });
+  openModal(h("div",{class:"modal",role:"dialog","aria-modal":"true","aria-labelledby":"in-h"},
+    h("h3",{id:"in-h",text:"Thông tin truyện"}),
+    h("div",{class:"field"},h("label",{for:"in-title",text:"Tên truyện"}),t,
+      h("p",{class:"hint",text:"Phần sau dấu hai chấm sẽ hiện thành dòng phụ đề nhỏ hơn."})),
+    h("div",{class:"field"},h("label",{for:"in-author",text:"Tác giả"}),a),
+    h("div",{class:"field"},h("label",{for:"in-intro",text:"Giới thiệu"}),intro),
+    err,
+    h("div",{class:"actions"},h("button",{class:"btn ghost",type:"button",onclick:closeModal},"Hủy"),save)
+  ),t);
+}
+
+/* ---------- start ---------- */
+applyFs();
+render();
+(async function init(){
+  if(!("indexedDB" in window)){S.noDb=true;render();return;}
+  const db=LocalStore();
+  try{
+    const info=await db.doc("novel/info").get();
+    if(!info.exists)await db.doc("novel/info").set({title:DEFAULT_TITLE,author:"",intro:""});
+  }catch(e){S.noDb=true;render();return;}
+  S.db=db;S.canWrite=true;
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});}catch(e){}
+  render();
+
+  const timer=setTimeout(()=>{if(!S.chConfirmed){S.timedOut=true;render();}},10000);
+  db.collection("chapters").orderBy("num").onSnapshot(snap=>{
+    S.chapters=snap.docs.map(d=>Object.assign({id:d.id},d.data()))
+      .filter(c=>typeof c.num==="number"&&isFinite(c.num))
+      .sort((x,y)=>x.num-y.num);
+    S.chapters.forEach(c=>{
+      if(S.texts.has(c.id)&&S.stamps.has(c.id)&&(c.updatedAt||0)>S.stamps.get(c.id)){S.texts.delete(c.id);S.stamps.delete(c.id);}
+    });
+    S.chLoaded=true;S.chError=null;
+    if(!snap.metadata.fromCache){S.chConfirmed=true;S.timedOut=false;clearTimeout(timer);}
+    render();
+  },e=>{S.chError=e;S.chLoaded=true;clearTimeout(timer);render();});
+  db.doc("novel/info").onSnapshot(s=>{S.info=s.exists?(s.data()||null):null;render();},()=>{});
+})();
+})();
+</script>
+</body>
+</html>
